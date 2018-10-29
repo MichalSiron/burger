@@ -20,8 +20,20 @@ class BurgerBuilder extends Component {
             salad: 0,
             meat: 0
         },
-        totalPrice: 0
+        totalPrice: 2,
+        purchasable: false
     };
+
+    setPurchasable(ingredients){
+        const sum = Object.keys(ingredients)
+            .map((igKey) => {
+               return ingredients[igKey]
+            }).reduce((sum, elem) => {
+                return sum + elem;
+            } , 0);
+        console.log(sum);
+        this.setState({purchasable: sum > 0})
+    }
 
     addIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type];
@@ -34,14 +46,44 @@ class BurgerBuilder extends Component {
         const updatedPrice = oldTotalPrice + priceAddition;
 
         this.setState({ingredients: updatedIngredients, totalPrice: updatedPrice});
+        this.setPurchasable(updatedIngredients);
+    };
+
+    removeIngredientHandler = (type) => {
+        const oldCount = this.state.ingredients[type];
+        if (oldCount <= 0) {
+            return;
+        }
+        const updatedCount = oldCount -1;
+        const updatedIngredients = {
+            ...this.state.ingredients
+        };
+        updatedIngredients[type] = updatedCount;
+
+        const oldPrice = this.state.totalPrice;
+        const additionalPrice = INGREDIENT_PRICES[type];
+        const newPrice = oldPrice - additionalPrice;
+
+        this.setState({ingredients: updatedIngredients, totalPrice: newPrice});
+        this.setPurchasable(updatedIngredients)
     };
 
     render(){
-        console.log(this.state.ingredients);
+        const disabledInfo = {...this.state.ingredients};
+        for (let key in disabledInfo){
+            disabledInfo[key] = disabledInfo[key] <= 0;
+        }
+        console.log(disabledInfo);
+
         return (
             <Aux>
                 <Burger ingredients={this.state.ingredients} />
-                <BuildControls addIngredient={this.addIngredientHandler}/>
+                <BuildControls
+                    addIngredient={this.addIngredientHandler}
+                    removeIngredient={this.removeIngredientHandler}
+                    totalPrice={this.state.totalPrice}
+                    disabled={disabledInfo}
+                    purchasable={this.state.purchasable}/>
             </Aux>
         )
     }
