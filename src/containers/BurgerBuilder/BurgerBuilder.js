@@ -5,6 +5,7 @@ import Aux from '../../hoc/Aux';
 import Modal from '../../components/UI/Modal/Modal';
 import OrderSummary from '../../components/Burger/OrderSummary/OrderSummary';
 import Spinner from '../../components/UI/Spinner/Spinner';
+import withErrorHandler from '../../hoc/withErrorHandler/withErrorHandler';
 import axios from '../../axios-orders';
 
 const INGREDIENT_PRICES = {
@@ -13,7 +14,6 @@ const INGREDIENT_PRICES = {
     bacon: 24,
     cheese: 19
 };
-
 
 class BurgerBuilder extends Component {
     state = {
@@ -136,4 +136,4 @@ class BurgerBuilder extends Component {
     }
 }
 
-export default BurgerBuilder;
+export default withErrorHandler(BurgerBuilder, axios);
